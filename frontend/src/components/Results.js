@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { getAnalysis } from '../services/api';
 
 function Results({ playerId }) {
   const [analysis, setAnalysis] = useState('');
@@ -17,7 +17,7 @@ function Results({ playerId }) {
     const fetchAnalysis = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(`/api/players/${playerId}/analysis`);
+        const response = await getAnalysis(playerId);
         setAnalysis(response.data.analysis);
       } catch (error) {
         console.error('Error fetching analysis:', error);
