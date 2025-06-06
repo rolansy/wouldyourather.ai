@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify, request, current_app
 from app.models import Question, Player
 from app.utils import generate_player_analysis
+import time
+import logging
 
 main_bp = Blueprint('main', __name__)
 
@@ -29,9 +31,22 @@ def get_questions():
 
 @main_bp.route('/api/players', methods=['POST'])
 def create_player():
-    data = request.get_json()
-    player_id = Player.create_player(data['name'])
-    return jsonify({'player_id': player_id})
+    start_time = time.time()
+    print(f"Starting player creation: {start_time}")
+    
+    try:
+        data = request.json
+        player_name = data.get('name', 'Anonymous')
+        
+        print(f"Creating player with name: {player_name}")
+        player_id = Player.create_player(player_name)
+        
+        print(f"Player created with ID: {player_id}, time: {time.time() - start_time}s")
+        return jsonify({'player_id': str(player_id)}), 201
+        
+    except Exception as e:
+        print(f"Error creating player: {str(e)}, time: {time.time() - start_time}s")
+        return jsonify({'error': str(e)}), 500
 
 @main_bp.route('/api/players/<player_id>/responses', methods=['POST'])
 def add_response(player_id):
