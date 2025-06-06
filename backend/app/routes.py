@@ -1,8 +1,22 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from app.models import Question, Player
 from app.utils import generate_player_analysis
 
 main_bp = Blueprint('main', __name__)
+
+# Add this route for the root path
+@main_bp.route('/', methods=['GET'])
+def index():
+    return jsonify({
+        "message": "Would You Rather API is running",
+        "version": "1.0",
+        "endpoints": [
+            "/api/questions",
+            "/api/players",
+            "/api/players/<player_id>",
+            "/api/players/<player_id>/analysis"
+        ]
+    })
 
 @main_bp.route('/api/questions', methods=['GET'])
 def get_questions():
