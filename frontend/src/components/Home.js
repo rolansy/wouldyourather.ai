@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function Home({ setPlayerId }) {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +15,7 @@ function Home({ setPlayerId }) {
 
     setIsLoading(true);
     try {
-      const response = await axios.post('/api/players', { name });
+      const response = await axios.post(`${API_URL}/api/players`, { name });
       setPlayerId(response.data.player_id);
       navigate('/game');
     } catch (error) {
