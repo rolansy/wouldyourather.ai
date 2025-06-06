@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { getQuestions, saveResponse } from '../services/api';
 
 function Game({ playerId }) {
   const [questions, setQuestions] = useState([]);
@@ -18,7 +18,7 @@ function Game({ playerId }) {
     // Fetch questions
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get('/api/questions?count=5');
+        const response = await getQuestions(5);
         setQuestions(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -37,11 +37,12 @@ function Game({ playerId }) {
     const question = questions[currentQuestion];
     
     try {
-      await axios.post(`/api/players/${playerId}/responses`, {
-        question_id: question._id,
-        question_text: question.question,
-        choice: choice === 'A' ? question.option_A : question.option_B
-      });
+      await saveResponse(
+        playerId,
+        question._id,
+        question.question,
+        choice === 'A' ? question.option_A : question.option_B
+      );
 
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
