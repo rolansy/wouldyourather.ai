@@ -1,16 +1,19 @@
 from flask import Flask
 from flask_cors import CORS
-from app.config import Config
 
-def create_app(config_class=Config):
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config_class)
     
-    # Enable CORS
-    CORS(app)
+    # Enable CORS for specific origins (more secure)
+    CORS(app, resources={r"/*": {
+        "origins": [
+            "https://wouldyouratherai.vercel.app",
+            "http://localhost:3000"  # For local development
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }})
     
-    # Register blueprints
-    from app.routes import main_bp
-    app.register_blueprint(main_bp)
+    # Load config and register blueprints...
     
     return app
