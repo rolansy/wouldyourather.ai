@@ -18,13 +18,23 @@ function Game({ playerId }) {
     // Fetch questions
     const fetchQuestions = async () => {
       try {
-        const response = await getQuestions(5);
-        setQuestions(response.data);
-        setIsLoading(false);
+        setIsLoading(true);
+        console.log('Fetching questions from:', `${process.env.REACT_APP_API_URL || ''}/api/questions`);
+        const response = await getQuestions();
+        console.log('Questions response:', response.data);
+        
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          setQuestions(response.data);
+        } else {
+          console.error('Invalid questions data format:', response.data);
+          throw new Error('No questions available');
+        }
       } catch (error) {
         console.error('Error fetching questions:', error);
         alert('Failed to load questions. Please try again.');
         navigate('/');
+      } finally {
+        setIsLoading(false);
       }
     };
 
