@@ -10,4 +10,4 @@ COPY . .
 ENV FLASK_APP="app:create_app()"
 ENV FLASK_ENV=production
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
+CMD ["gunicorn", "--config", "gunicorn_config.py", "wsgi:app"]
