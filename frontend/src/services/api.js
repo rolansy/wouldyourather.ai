@@ -1,10 +1,17 @@
 import axios from 'axios';
 
-// Use environment variable or fallback to the render URL
-const API_URL = process.env.REACT_APP_API_URL || 'https://wouldyourather-backend.onrender.com';
+// The current implementation has a problem - API_URL should either be:
+// 1. In local dev: empty string (to use relative URLs) 
+// 2. In production: the full backend URL for CORS requests
 
-// Add request timeout
-axios.defaults.timeout = 15000; // 15 seconds
+// Remove the current variable declaration and use:
+const API_URL = '';  // Use relative URLs that the nginx proxy will handle
+
+// For debugging - log the actual endpoints
+console.log('API endpoints configured at:', {
+  questions: `${API_URL}/api/questions`,
+  players: `${API_URL}/api/players` 
+});
 
 export const getQuestions = () => {
   return axios.get(`${API_URL}/api/questions`);
