@@ -2,26 +2,53 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from app.config import Config
 import random
+import logging
 
-# Add connection pooling and timeout settings
-client = MongoClient(
-    Config.MONGO_URI,
-    maxPoolSize=10,
-    serverSelectionTimeoutMS=5000,
-    connectTimeoutMS=5000,
-    socketTimeoutMS=10000
-)
-db = client.get_database()
+# Add better connection handling and error logging
+try:
+    print(f"Attempting to connect to MongoDB with URI: {Config.MONGO_URI[:20]}...") # Only show beginning for security
+    client = MongoClient(
+        Config.MONGO_URI,
+        maxPoolSize=10,
+        serverSelectionTimeoutMS=10000,
+        connectTimeoutMS=10000,
+        socketTimeoutMS=45000
+    )
+    
+    # Test the connection
+    info = client.server_info()
+    print(f"Successfully connected to MongoDB: {info.get('version', 'unknown version')}")
+    
+    db = client.get_database()
+    print(f"Using database: {db.name}")
+except Exception as e:
+    print(f"MongoDB connection error: {str(e)}")
+    # Don't crash on startup, but log the error
+    logging.error(f"Failed to connect to MongoDB: {str(e)}")
 
 class Question:
     collection = db.questions
 
     @staticmethod
     def get_random_questions(count=5):
-        # Get random questions from the database
-        pipeline = [{"$sample": {"size": count}}]
-        questions = list(Question.collection.aggregate(pipeline))
-        return questions
+        try:
+            # Get total count first
+            total = Question.collection.count_documents({})
+            print(f"Total questions in database: {total}")
+            
+            if total == 0:
+                print("Warning: No questions found in database!")
+                return []
+                
+            # Get random questions from the database
+            pipeline = [{"$sample": {"size": min(count, total)}}]
+            questions = list(Question.collection.aggregate(pipeline))
+            
+            print(f"Retrieved {len(questions)} random questions")
+            return questions
+        except Exception as e:
+            print(f"Error getting questions: {str(e)}")
+            return []
 
     @staticmethod
     def add_question(question_data):
