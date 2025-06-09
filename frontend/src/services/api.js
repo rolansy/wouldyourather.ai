@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'https://wouldyourather-backend.onrender.com'; // Your Render backend URL
+// Use environment variable or fallback to the render URL
+const API_URL = process.env.REACT_APP_API_URL || 'https://wouldyourather-backend.onrender.com';
+
+// Add request timeout
+axios.defaults.timeout = 15000; // 15 seconds
 
 export const getQuestions = () => {
   return axios.get(`${API_URL}/api/questions`);
