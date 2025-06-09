@@ -39,7 +39,8 @@ def generate_player_analysis(player_data):
         response = requests.post(
             "https://api.anthropic.com/v1/messages",
             headers=headers,
-            json=data
+            json=data,
+            timeout=30  # Add timeout
         )
         
         if response.status_code == 200:
