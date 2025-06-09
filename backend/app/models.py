@@ -3,7 +3,14 @@ from bson.objectid import ObjectId
 from app.config import Config
 import random
 
-client = MongoClient(Config.MONGO_URI)
+# Add connection pooling and timeout settings
+client = MongoClient(
+    Config.MONGO_URI,
+    maxPoolSize=10,
+    serverSelectionTimeoutMS=5000,
+    connectTimeoutMS=5000,
+    socketTimeoutMS=10000
+)
 db = client.get_database()
 
 class Question:
